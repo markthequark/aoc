@@ -35,12 +35,10 @@ solve_p1(List) when is_list(List) ->
 
 solve_p1([_], Acc) ->
     Acc;
-solve_p1([H1 | [H2 | _] = T], Acc) ->
-    if H2 > H1 ->
-           solve_p1(T, Acc + 1);
-       true ->
-           solve_p1(T, Acc)
-    end.
+solve_p1([H1 | [H2 | _] = T], Acc) when H2 > H1 ->
+    solve_p1(T, Acc + 1);
+solve_p1([_ | T], Acc) ->
+    solve_p1(T, Acc).
 
 %% Part 2
 
