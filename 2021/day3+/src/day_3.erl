@@ -3,53 +3,82 @@
 %% API
 -export([p1/1, p2/1]).
 
+%%====================================================================
+%% API functions
+%%====================================================================
+
 p1(Filename) ->
-    {ok, File} = file:open(Filename, read),
-    {ok, Line} = file:read_line(File),
-    LineLength = length(Line -- "\n"),
-    GetLine =
-        fun() ->
-           case file:read(File, LineLength) of
-               {ok, NewLine} ->
-                   file:position(File, {cur, 1}),
-                   NewLine;
-               eof ->
-                   eof;
-               {error, _} = e ->
-                   e
-           end
+    Lines = p1_parse_file(Filename),
+    BitList = p1_most_common_bits(Lines),
+
+    GammaRate = list_to_integer(BitList, 2),
+    BitNegate =
+        fun ($0) ->
+                $1;
+            ($1) ->
+                $0
         end,
+    EpsilonRate = list_to_integer(lists:map(BitNegate, BitList), 2),
 
-    Acc0 = [{0, 0} || _ <- lists:seq(1, LineLength)],
-    ZipFn =
-        fun ({Zeros, Ones}, $0) ->
-                {Zeros + 1, Ones};
-            ({Zeros, Ones}, $1) ->
-                {Zeros, Ones + 1}
-        end,
+    GammaRate * EpsilonRate.
 
-    BitDist = p1_parse_lines(GetLine, ZipFn, Line -- "\n", Acc0),
+p2(Filename) ->
+    ok.
 
-    file:close(File),
+%%====================================================================
+%% Part 1 Internal functions
+%%====================================================================
 
+%% Returns a list of trimmed strings for each line in the file
+-spec p1_parse_file(string()) -> [string()].
+p1_parse_file(Filename) ->
+    {ok, Binary} = file:read_file(Filename),
+    Lines = binary:split(Binary, <<"\n">>, [global, trim]),
+    lists:map(fun(Bin) -> binary:bin_to_list(Bin) end, Lines).
+
+%% Takes a list of strings of the same length, formed only of 1s and 0s
+%% and returns a string containing the most common character at each position.
+%% In a tie, 1 is chosen.
+%% Examples:
+%% > p1_most_common_bits(["1", "1"]).
+%% "1"
+%% > p1_most_common_bits(["1", "0"]).
+%% "1"
+%% > p1_most_common_bits(["11", "11", "00"]).
+%% "11"
+%% > p1_most_common_bits(["1111", "1110", "1100", "1000", "0000"]).
+%% "1100"
+-spec p1_most_common_bits([string()]) -> string().
+p1_most_common_bits(Lines) ->
     ToBinary =
         fun ({Zeros, Ones}) when Zeros > Ones ->
                 $0;
             (_) ->
                 $1
         end,
-    Binary = lists:map(ToBinary, BitDist),
-    GammaRate = list_to_integer(Binary, 2),
+    lists:map(ToBinary, p1_bit_distribution(Lines)).
 
-    ok.
+%% Takes a list of strings of the same length, formed only of 1s and 0s
+%% and returns the number of 1s and 0s in each position
+%% Examples:
+%% > p1_bit_distribution(["1", "1"]).
+%% [{0,2}]
+%% > p1_bit_distribution(["10", "10", "10"]).
+%% [{0,3}, {3,0}]
+%% > p1_bit_distribution(["0001", "0011", "0111"]).
+%% [{3,0}, {2,1}, {1,2}, {0,3}]
+-spec p1_bit_distribution([string()]) -> [{integer(), integer()}].
+p1_bit_distribution(Lines) ->
+    Acc0 = [{0, 0} || _ <- lists:seq(1, length(hd(Lines)))],
+    ZipFn =
+        fun ($0, {Zeros, Ones}) ->
+                {Zeros + 1, Ones};
+            ($1, {Zeros, Ones}) ->
+                {Zeros, Ones + 1}
+        end,
+    ReduceFn = fun(Line, Acc) -> lists:zipwith(ZipFn, Line, Acc) end,
+    lists:foldl(ReduceFn, Acc0, Lines).
 
-p1_parse_lines(_GetLine, _ZipFn, eof, Acc) ->
-    Acc;
-p1_parse_lines(GetLine, ZipFn, "\n", Acc) ->
-    p1_parse_lines(GetLine, ZipFn, GetLine(), Acc);
-p1_parse_lines(GetLine, ZipFn, Line, Acc) ->
-    NewAcc = lists:zipwith(ZipFn, Acc, Line),
-    p1_parse_lines(GetLine, ZipFn, GetLine(), NewAcc).
-
-p2(Filename) ->
-    ok.
+%%====================================================================
+%% Part 2 Internal functions
+%%====================================================================
