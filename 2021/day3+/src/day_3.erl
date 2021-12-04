@@ -10,7 +10,7 @@
 %%====================================================================
 
 p1(Filename) ->
-    Lines = parse_file(Filename),
+    Lines = helper:read_lines(Filename, string),
     BitList = most_common_bits(Lines),
 
     GammaRate = list_to_integer(BitList, 2),
@@ -19,7 +19,7 @@ p1(Filename) ->
     GammaRate * EpsilonRate.
 
 p2(Filename) ->
-    Lines = parse_file(Filename),
+    Lines = helper:read_lines(Filename, string),
 
     OxygenGeneratorRating = list_to_integer(p2_filter(Lines, most_common), 2),
     CO2ScrubberRating = list_to_integer(p2_filter(Lines, least_common), 2),
@@ -35,13 +35,6 @@ negate_bit($0) ->
     $1;
 negate_bit($1) ->
     $0.
-
-%% Returns a list of trimmed strings for each line in the file
--spec parse_file(string()) -> [string()].
-parse_file(Filename) ->
-    {ok, Binary} = file:read_file(Filename),
-    Lines = binary:split(Binary, <<"\n">>, [global, trim]),
-    map(fun(Bin) -> binary:bin_to_list(Bin) end, Lines).
 
 %% Takes a list of strings of the same length, formed only of 1s and 0s
 %% and returns a string containing the most common character at each position.
