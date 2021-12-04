@@ -1,5 +1,7 @@
 -module(day_3).
 
+-import(lists, [nth/2, foldl/3, map/2, zipwith/3, seq/2]).
+
 %% API
 -export([p1/1, p2/1]).
 
@@ -12,7 +14,7 @@ p1(Filename) ->
     BitList = most_common_bits(Lines),
 
     GammaRate = list_to_integer(BitList, 2),
-    EpsilonRate = list_to_integer(lists:map(fun(X) -> negate_bit(X) end, BitList), 2),
+    EpsilonRate = list_to_integer(map(fun(X) -> negate_bit(X) end, BitList), 2),
 
     GammaRate * EpsilonRate.
 
@@ -39,7 +41,7 @@ negate_bit($1) ->
 parse_file(Filename) ->
     {ok, Binary} = file:read_file(Filename),
     Lines = binary:split(Binary, <<"\n">>, [global, trim]),
-    lists:map(fun(Bin) -> binary:bin_to_list(Bin) end, Lines).
+    map(fun(Bin) -> binary:bin_to_list(Bin) end, Lines).
 
 %% Takes a list of strings of the same length, formed only of 1s and 0s
 %% and returns a string containing the most common character at each position.
@@ -61,7 +63,7 @@ most_common_bits(Lines) ->
             (_) ->
                 $1
         end,
-    lists:map(ToChar, bit_distribution(Lines)).
+    map(ToChar, bit_distribution(Lines)).
 
 %% Takes a list of strings of the same length, formed only of 1s and 0s
 %% and returns the number of 1s and 0s in each position
@@ -74,15 +76,15 @@ most_common_bits(Lines) ->
 %% [{3,0}, {2,1}, {1,2}, {0,3}]
 -spec bit_distribution([string()]) -> [{integer(), integer()}].
 bit_distribution(Lines) ->
-    Acc0 = [{0, 0} || _ <- lists:seq(1, length(hd(Lines)))],
+    Acc0 = [{0, 0} || _ <- seq(1, length(hd(Lines)))],
     ZipFn =
         fun ($0, {Zeros, Ones}) ->
                 {Zeros + 1, Ones};
             ($1, {Zeros, Ones}) ->
                 {Zeros, Ones + 1}
         end,
-    ReduceFn = fun(Line, Acc) -> lists:zipwith(ZipFn, Line, Acc) end,
-    lists:foldl(ReduceFn, Acc0, Lines).
+    ReduceFn = fun(Line, Acc) -> zipwith(ZipFn, Line, Acc) end,
+    foldl(ReduceFn, Acc0, Lines).
 
 %% Follows the completely contrived algorithm as described on part 2
 %% https://adventofcode.com/2021/day/3
@@ -93,12 +95,12 @@ p2_filter(Lines, Method) ->
 p2_filter([Line], _, _, _) ->
     Line;
 p2_filter(Lines, BitCriteria, Offset, most_common) when is_list(BitCriteria) ->
-    Match = lists:nth(Offset, BitCriteria),
+    Match = nth(Offset, BitCriteria),
     p2_filter(Lines, Match, Offset, most_common);
 p2_filter(Lines, BitCriteria, Offset, least_common) when is_list(BitCriteria) ->
-    Match = negate_bit(lists:nth(Offset, BitCriteria)),
+    Match = negate_bit(nth(Offset, BitCriteria)),
     p2_filter(Lines, Match, Offset, least_common);
 p2_filter(Lines, Match, Offset, Method) ->
-    RemainingLines = [Line || Line <- Lines, Match == lists:nth(Offset, Line)],
+    RemainingLines = [Line || Line <- Lines, Match == nth(Offset, Line)],
     NewBitCriteria = most_common_bits(RemainingLines),
     p2_filter(RemainingLines, NewBitCriteria, Offset + 1, Method).
