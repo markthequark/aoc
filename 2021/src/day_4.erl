@@ -20,7 +20,7 @@ p1(Filename) ->
   CallNumbers = lists:map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
   Boards = to_bingo_boards(tl(Lines)),
 
-  {CalledNum, WinningBoard} = call_until_winner(CallNumbers, Boards),
+  {CalledNum, WinningBoard} = call_until_winner(CallNumbers, Boards, first),
 
   score(CalledNum, WinningBoard).
 
@@ -29,7 +29,7 @@ p2(Filename) ->
   CallNumbers = lists:map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
   Boards = to_bingo_boards(tl(Lines)),
 
-  {CalledNum, WinningBoard} = call_until_last_winner(CallNumbers, Boards),
+  {CalledNum, WinningBoard} = call_until_winner(CallNumbers, Boards, last),
 
   score(CalledNum, WinningBoard).
 
@@ -53,40 +53,24 @@ to_bingo_boards([Line | Rest], N, [Board | Boards]) when N < ?BOARD_SIZE ->
   NewLine = map(ParseLine, string:lexemes(Line, " ")),
   to_bingo_boards(Rest, N + 1, [[NewLine | Board] | Boards]).
 
-%% @doc Returns the winning number and the first board to win
--spec call_until_winner([integer()], [board()]) -> {integer(), board()} | no_winner.
-call_until_winner(CallNumbers, Boards) ->
-  call_until_winner(CallNumbers, Boards, []).
+%% @doc Returns the winning number and the first or last board to win
+-spec call_until_winner([integer()], [board()], first | last) -> {integer(), board()}.
+call_until_winner(CallNumbers, Boards, Method) ->
+  call_until_winner(CallNumbers, Boards, [], Method).
 
-call_until_winner([], [], _) ->
-  no_winner;
-call_until_winner([_ | Numbers], [], NewBoards) ->
-  call_until_winner(Numbers, NewBoards, []);
-call_until_winner([Number | _] = Numbers, [Board | Boards], NewBoards) ->
+call_until_winner(Numbers, [Board], [], last) ->
+  call_until_winner(Numbers, [Board], [], first);
+call_until_winner([_ | Numbers], [], NewBoards, Method) ->
+  call_until_winner(Numbers, NewBoards, [], Method);
+call_until_winner([Number | _] = Numbers, [Board | Boards], NewBoards, Method) ->
   NewBoard = call_number(Number, Board),
-  case is_bingo(NewBoard) of
-    true ->
+  case {is_bingo(NewBoard), Method} of
+    {true, first} ->
       {Number, NewBoard};
-    false ->
-      call_until_winner(Numbers, Boards, [NewBoard | NewBoards])
-  end.
-
-%% @doc Returns the winning number and the last board to win
--spec call_until_last_winner([integer()], [board()]) -> {integer(), board()} | no_winner.
-call_until_last_winner(CallNumbers, Boards) ->
-  call_until_last_winner(CallNumbers, Boards, []).
-
-call_until_last_winner(Numbers, [Board], []) ->
-  call_until_winner(Numbers, [Board], []);
-call_until_last_winner([_ | Numbers], [], NewBoards) ->
-  call_until_last_winner(Numbers, NewBoards, []);
-call_until_last_winner([Number | _] = Numbers, [Board | Boards], NewBoards) ->
-  NewBoard = call_number(Number, Board),
-  case is_bingo(NewBoard) of
-    true ->
-      call_until_last_winner(Numbers, Boards, NewBoards);
-    false ->
-      call_until_last_winner(Numbers, Boards, [NewBoard | NewBoards])
+    {true, last} ->
+      call_until_winner(Numbers, Boards, NewBoards, Method);
+    {false, _} ->
+      call_until_winner(Numbers, Boards, [NewBoard | NewBoards], Method)
   end.
 
 -spec call_numbers([integer()], board()) -> board().
