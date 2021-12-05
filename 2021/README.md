@@ -11,4 +11,4 @@ Build
 Run
 ---
 
-    $ ./advent_of_code <day>
+    $ make run <day number>
