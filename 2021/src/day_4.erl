@@ -32,6 +32,7 @@ p2(Filename) ->
 %% Internal functions
 %%====================================================================
 
+%% @doc Converts a list of strings to bingo boards of size ?BOARD_SIZE
 %% The order of boards are reversed.
 %% The order of lines in boards are reversed. In the game rules these are equivalent boards
 -spec to_bingo_boards([string()]) -> [board()].
@@ -47,8 +48,8 @@ to_bingo_boards([Line | Rest], N, [Board | Boards]) when N < ?BOARD_SIZE ->
   NewLine = map(ParseLine, string:lexemes(Line, " ")),
   to_bingo_boards(Rest, N + 1, [[NewLine | Board] | Boards]).
 
-%% Returns the winning number and a board that won
--spec call_until_winner([integer()], [board()]) -> {integer(), board()}.
+%% @doc Returns the winning number and a board that won
+-spec call_until_winner([integer()], [board()]) -> {integer(), board()} | no_winner.
 call_until_winner(CallNumbers, Boards) ->
   call_until_winner(CallNumbers, Boards, []).
 

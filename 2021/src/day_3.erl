@@ -35,7 +35,7 @@ negate_bit($0) ->
 negate_bit($1) ->
   $0.
 
-%% Takes a list of strings of the same length, formed only of 1s and 0s
+%% @doc Takes a list of strings of the same length, formed only of 1s and 0s
 %% and returns a string containing the most common character at each position.
 %% In a tie, 1 is chosen.
 %% Examples:
@@ -56,7 +56,7 @@ most_common_bits(Lines) ->
     end,
   map(ToChar, bit_distribution(Lines)).
 
-%% Takes a list of strings of the same length, formed only of 1s and 0s
+%% @doc Takes a list of strings of the same length, formed only of 1s and 0s
 %% and returns the number of 1s and 0s in each position
 %% Examples:
 %% > bit_distribution(["1", "1"]).
@@ -76,7 +76,7 @@ bit_distribution(Lines) ->
   ReduceFn = fun(Line, Acc) -> zipwith(ZipFn, Line, Acc) end,
   foldl(ReduceFn, Acc0, Lines).
 
-%% Takes a list of strings of the same length, formed only of 1s and 0s
+%% @doc Takes a list of strings of the same length, formed only of 1s and 0s
 %% and returns the string which most closely matches the most/least common bits
 %% where the most/least common bits are recalculated after filtering on bit 1, 2 etc.
 %% More information: https://adventofcode.com/2021/day/3#part2
