@@ -10,4 +10,4 @@ read_lines(Filename, binary) ->
     binary:split(Binary, <<"\n">>, [global, trim]);
 read_lines(Filename, string) ->
     Lines = read_lines(Filename, binary),
-    lists:map(fun(Bin) -> binary:bin_to_list(Bin) end, Lines).
+    lists:map(fun binary_to_list/1, Lines).
