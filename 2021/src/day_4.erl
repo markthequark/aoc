@@ -100,5 +100,10 @@ is_bingo([Line | Rest], Acc) ->
 -spec score(integer(), board()) -> integer().
 score(CalledNum, Board) ->
   CalledNum
-  * lists:sum(
-      lists:flatten([[Num || {Status, Num} <- Line, Status == unmarked] || Line <- Board])).
+  * lists:foldl(fun ({unmarked, Num}, Acc) ->
+                      Num + Acc;
+                    ({marked, _Num}, Acc) ->
+                      Acc
+                end,
+                0,
+                lists:flatten(Board)).
