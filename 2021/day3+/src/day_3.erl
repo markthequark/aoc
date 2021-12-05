@@ -30,7 +30,6 @@ p2(Filename) ->
 %% Internal functions
 %%====================================================================
 
--spec negate_bit(char()) -> char().
 negate_bit($0) ->
     $1;
 negate_bit($1) ->
@@ -48,7 +47,6 @@ negate_bit($1) ->
 %% "11"
 %% > most_common_bits(["1111", "1110", "1100", "1000", "0000"]).
 %% "1100"
--spec most_common_bits([string()]) -> string().
 most_common_bits(Lines) ->
     ToChar =
         fun ({Zeros, Ones}) when Zeros > Ones ->
@@ -67,7 +65,6 @@ most_common_bits(Lines) ->
 %% [{0,3}, {3,0}]
 %% > bit_distribution(["0001", "0011", "0111"]).
 %% [{3,0}, {2,1}, {1,2}, {0,3}]
--spec bit_distribution([string()]) -> [{integer(), integer()}].
 bit_distribution(Lines) ->
     Acc0 = [{0, 0} || _ <- seq(1, length(hd(Lines)))],
     ZipFn =
@@ -79,10 +76,11 @@ bit_distribution(Lines) ->
     ReduceFn = fun(Line, Acc) -> zipwith(ZipFn, Line, Acc) end,
     foldl(ReduceFn, Acc0, Lines).
 
-%% Follows the completely contrived algorithm as described on part 2
-%% https://adventofcode.com/2021/day/3
--spec p2_filter([string()], most_common | least_common) -> string().
-p2_filter(Lines, Method) ->
+%% Takes a list of strings of the same length, formed only of 1s and 0s
+%% and returns the string which most closely matches the most/least common bits
+%% where the most/least common bits are recalculated after filtering on bit 1, 2 etc.
+%% More information: https://adventofcode.com/2021/day/3#part2
+p2_filter(Lines, Method) when Method == most_common orelse Method == least_common ->
     p2_filter(Lines, most_common_bits(Lines), 1, Method).
 
 p2_filter([Line], _, _, _) ->
