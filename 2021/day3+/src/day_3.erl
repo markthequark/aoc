@@ -14,7 +14,7 @@ p1(Filename) ->
     BitList = most_common_bits(Lines),
 
     GammaRate = list_to_integer(BitList, 2),
-    EpsilonRate = list_to_integer(map(fun(X) -> negate_bit(X) end, BitList), 2),
+    EpsilonRate = list_to_integer(map(fun negate_bit/1, BitList), 2),
 
     GammaRate * EpsilonRate.
 
