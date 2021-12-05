@@ -26,7 +26,12 @@ p1(Filename) ->
 
 p2(Filename) ->
   Lines = helper:read_lines(Filename, string),
-  ok.
+  CallNumbers = lists:map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
+  Boards = to_bingo_boards(tl(Lines)),
+
+  {CalledNum, WinningBoard} = call_until_last_winner(CallNumbers, Boards),
+
+  score(CalledNum, WinningBoard).
 
 %%====================================================================
 %% Internal functions
@@ -48,7 +53,7 @@ to_bingo_boards([Line | Rest], N, [Board | Boards]) when N < ?BOARD_SIZE ->
   NewLine = map(ParseLine, string:lexemes(Line, " ")),
   to_bingo_boards(Rest, N + 1, [[NewLine | Board] | Boards]).
 
-%% @doc Returns the winning number and a board that won
+%% @doc Returns the winning number and the first board to win
 -spec call_until_winner([integer()], [board()]) -> {integer(), board()} | no_winner.
 call_until_winner(CallNumbers, Boards) ->
   call_until_winner(CallNumbers, Boards, []).
@@ -64,6 +69,24 @@ call_until_winner([Number | _] = Numbers, [Board | Boards], NewBoards) ->
       {Number, NewBoard};
     false ->
       call_until_winner(Numbers, Boards, [NewBoard | NewBoards])
+  end.
+
+%% @doc Returns the winning number and the last board to win
+-spec call_until_last_winner([integer()], [board()]) -> {integer(), board()} | no_winner.
+call_until_last_winner(CallNumbers, Boards) ->
+  call_until_last_winner(CallNumbers, Boards, []).
+
+call_until_last_winner(Numbers, [Board], []) ->
+  call_until_winner(Numbers, [Board], []);
+call_until_last_winner([_ | Numbers], [], NewBoards) ->
+  call_until_last_winner(Numbers, NewBoards, []);
+call_until_last_winner([Number | _] = Numbers, [Board | Boards], NewBoards) ->
+  NewBoard = call_number(Number, Board),
+  case is_bingo(NewBoard) of
+    true ->
+      call_until_last_winner(Numbers, Boards, NewBoards);
+    false ->
+      call_until_last_winner(Numbers, Boards, [NewBoard | NewBoards])
   end.
 
 -spec call_numbers([integer()], board()) -> board().
