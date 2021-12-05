@@ -1,14 +1,14 @@
 advent_of_code
 =====
 
-An escript
+Erlang solutions to the [Advent of Code 2021](https://adventofcode.com/2021/)
 
 Build
------
+---
 
-    $ rebar3 escriptize
+    $ make build
 
 Run
 ---
 
-    $ _build/default/bin/advent_of_code
+    $ ./advent_of_code <day>
