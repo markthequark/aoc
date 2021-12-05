@@ -87,13 +87,13 @@ p2_filter(Lines, Method) ->
 
 p2_filter([Line], _, _, _) ->
     Line;
-p2_filter(Lines, BitCriteria, Offset, most_common) when is_list(BitCriteria) ->
-    Match = nth(Offset, BitCriteria),
-    p2_filter(Lines, Match, Offset, most_common);
-p2_filter(Lines, BitCriteria, Offset, least_common) when is_list(BitCriteria) ->
-    Match = negate_bit(nth(Offset, BitCriteria)),
-    p2_filter(Lines, Match, Offset, least_common);
-p2_filter(Lines, Match, Offset, Method) ->
-    RemainingLines = [Line || Line <- Lines, Match == nth(Offset, Line)],
+p2_filter(Lines, BitCriteria, Offset, Method) ->
+    Bit = case Method of
+              most_common ->
+                  nth(Offset, BitCriteria);
+              least_common ->
+                  negate_bit(nth(Offset, BitCriteria))
+          end,
+    RemainingLines = [Line || Line <- Lines, nth(Offset, Line) == Bit],
     NewBitCriteria = most_common_bits(RemainingLines),
     p2_filter(RemainingLines, NewBitCriteria, Offset + 1, Method).
