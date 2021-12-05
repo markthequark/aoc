@@ -17,9 +17,4 @@ main([Day]) ->
     io:format("Part 1 answer: ~p~nPart 2 answer: ~p~n", [Answer1, Answer2]),
     erlang:halt(0);
 main(_) ->
-    io:format("Bad args, call script as ./script <day>
-    e.g. ./script 3").
-
-%%====================================================================
-%% Internal functions
-%%====================================================================
+    io:format("Bad args, call script as ./script <day>~ne.g. ./script 3~n").
