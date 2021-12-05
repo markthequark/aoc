@@ -1,6 +1,6 @@
 -module(day_3).
 
--import(lists, [nth/2, foldl/3, map/2, zipwith/3, seq/2]).
+-import(lists, [nth/2, foldl/3, map/2, zipwith/3]).
 
 %% API
 -export([p1/1, p2/1]).
@@ -66,7 +66,7 @@ most_common_bits(Lines) ->
 %% > bit_distribution(["0001", "0011", "0111"]).
 %% [{3,0}, {2,1}, {1,2}, {0,3}]
 bit_distribution(Lines) ->
-    Acc0 = [{0, 0} || _ <- seq(1, length(hd(Lines)))],
+    Acc0 = [{0, 0} || _ <- hd(Lines)],
     ZipFn =
         fun ($0, {Zeros, Ones}) ->
                 {Zeros + 1, Ones};
