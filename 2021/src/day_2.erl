@@ -1,5 +1,7 @@
 -module(day_2).
 
+-import(lists, [map/2]).
+
 %% API exports
 -export([p1/1, p2/1]).
 
@@ -8,7 +10,7 @@
 %%====================================================================
 
 p1(Filename) ->
-  Lines = lists:map(fun parse_input/1, helper:read_lines(Filename, binary)),
+  Lines = map(fun parse_input/1, helper:read_lines(Filename, binary)),
   p1(Lines, 0, 0).
 
 p1([], Horizontal, Depth) ->
@@ -21,7 +23,7 @@ p1([{down, N} | T], Horizontal, Depth) ->
   p1(T, Horizontal, Depth + N).
 
 p2(Filename) ->
-  Lines = lists:map(fun parse_input/1, helper:read_lines(Filename, binary)),
+  Lines = map(fun parse_input/1, helper:read_lines(Filename, binary)),
   p2(Lines, 0, 0, 0).
 
 p2([], Horizontal, Depth, _Aim) ->

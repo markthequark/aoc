@@ -1,5 +1,7 @@
 -module(helper).
 
+-import(lists, [map/2]).
+
 %% API
 -export([read_lines/2, undigits/1, undigits/2]).
 
@@ -10,7 +12,7 @@ read_lines(Filename, binary) ->
   binary:split(Binary, <<"\n">>, [global, trim_all]);
 read_lines(Filename, string) ->
   Lines = read_lines(Filename, binary),
-  lists:map(fun binary_to_list/1, Lines).
+  map(fun binary_to_list/1, Lines).
 
 %% Returns the integer represented by the ordered Digits
 %% An optional Base value may be provided representing the radix for the Digits

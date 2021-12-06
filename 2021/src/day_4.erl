@@ -1,6 +1,6 @@
 -module(day_4).
 
--import(lists, [nth/2, foldl/3, map/2, zipwith/3, seq/2]).
+-import(lists, [foldl/3, map/2]).
 
 -define(BOARD_SIZE, 5).
 
@@ -15,7 +15,7 @@
 
 p1(Filename) ->
   Lines = helper:read_lines(Filename, string),
-  CallNumbers = lists:map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
+  CallNumbers = map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
   Boards = to_bingo_boards(tl(Lines)),
 
   {CalledNum, WinningBoard} = call_until_winner(CallNumbers, Boards, first),
@@ -24,7 +24,7 @@ p1(Filename) ->
 
 p2(Filename) ->
   Lines = helper:read_lines(Filename, string),
-  CallNumbers = lists:map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
+  CallNumbers = map(fun list_to_integer/1, string:lexemes(hd(Lines), ",")),
   Boards = to_bingo_boards(tl(Lines)),
 
   {CalledNum, WinningBoard} = call_until_winner(CallNumbers, Boards, last),
@@ -71,10 +71,6 @@ call_until_winner([Number | _] = Numbers, [Board | Boards], NewBoards, Method) -
       call_until_winner(Numbers, Boards, [NewBoard | NewBoards], Method)
   end.
 
--spec call_numbers([integer()], board()) -> board().
-call_numbers(Calls, Board) ->
-  foldl(fun call_number/2, Board, Calls).
-
 -spec call_number(integer(), board()) -> board().
 call_number(Called, Board) ->
   [[case Num of
@@ -106,10 +102,10 @@ is_bingo([Line | Rest], Acc) ->
 -spec score(integer(), board()) -> integer().
 score(CalledNum, Board) ->
   CalledNum
-  * lists:foldl(fun ({unmarked, Num}, Acc) ->
-                      Num + Acc;
-                    ({marked, _Num}, Acc) ->
-                      Acc
-                end,
-                0,
-                lists:flatten(Board)).
+  * foldl(fun ({unmarked, Num}, Acc) ->
+                Num + Acc;
+              ({marked, _Num}, Acc) ->
+                Acc
+          end,
+          0,
+          lists:flatten(Board)).
