@@ -1,10 +1,12 @@
 -module(day_1).
 
+-import(lists, [map/2]).
+
 %% API exports
 -export([p1/1, p2/1]).
 
 p1(Filename) ->
-  Lines = lists:map(fun binary_to_integer/1, helper:read_lines(Filename, binary)),
+  Lines = map(fun binary_to_integer/1, helper:read_lines(Filename, binary)),
   p1(Lines, 0).
 
 p1([_], Acc) ->
@@ -15,7 +17,7 @@ p1([_ | T], Acc) ->
   p1(T, Acc).
 
 p2(Filename) ->
-  Lines = lists:map(fun binary_to_integer/1, helper:read_lines(Filename, binary)),
+  Lines = map(fun binary_to_integer/1, helper:read_lines(Filename, binary)),
   p2(Lines, 0).
 
 p2([_, _, _], Acc) ->

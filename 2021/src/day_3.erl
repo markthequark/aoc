@@ -1,6 +1,6 @@
 -module(day_3).
 
--import(lists, [nth/2, foldl/3, map/2, zipwith/3]).
+-import(lists, [nth/2, foldl/3, map/2]).
 
 %% API
 -export([p1/1, p2/1]).
@@ -73,7 +73,7 @@ bit_distribution(Lines) ->
         ($1, {Zeros, Ones}) ->
           {Zeros, Ones + 1}
     end,
-  ReduceFn = fun(Line, Acc) -> zipwith(ZipFn, Line, Acc) end,
+  ReduceFn = fun(Line, Acc) -> lists:zipwith(ZipFn, Line, Acc) end,
   foldl(ReduceFn, Acc0, Lines).
 
 %% @doc Takes a list of strings of the same length, formed only of 1s and 0s
