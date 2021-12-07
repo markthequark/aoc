@@ -1,9 +1,9 @@
 -module(helper).
 
--import(lists, [map/2]).
+-import(lists, [map/2, foldl/3]).
 
 %% API
--export([read_input/3, read_lines/2, undigits/1, undigits/2]).
+-export([read_input/3, read_lines/2, undigits/1, undigits/2, frequency_map/1]).
 
 %% @doc Returns a list of trimmed strings or binaries for each line in the file, ignoring empty lines
 -spec read_lines(string(), binary | string) -> [binary() | string()].
@@ -34,3 +34,10 @@ undigits([Digit | _], Base, _) when Digit >= Base ->
   error(badarg, io_lib:format("invalid digit ~p in base ~p~n", [Digit, Base]));
 undigits([Digit | Rest], Base, Acc) ->
   undigits(Rest, Base, Acc * Base + Digit).
+
+%% @doc Returns a map of term => frequency for the given list.
+-spec frequency_map([T]) -> #{T => integer()}.
+frequency_map(List) when is_list(List) ->
+  foldl(fun(Elem, Acc) -> maps:update_with(Elem, fun(X) -> X + 1 end, 1, Acc) end,
+        #{},
+        List).
