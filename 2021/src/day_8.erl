@@ -1,6 +1,6 @@
 -module(day_8).
 
--import(lists, [map/2, seq/2, min/1, max/1, sum/1]).
+-import(lists, [map/2, foldl/3, seq/2, min/1, max/1, sum/1]).
 
 -compile(export_all).
 
@@ -12,7 +12,30 @@
 %%====================================================================
 
 p1(Filename) ->
-  solve(Filename).
+  InputLines = helper:read_lines("priv/day8.txt", string),
+  W = map(fun(L) -> lists:split(10, string:lexemes(L, " |")) end, InputLines),
+  foldl(fun({_, Out}, Acc) ->
+           Acc
+           + foldl(fun(E, A) ->
+                      Len = length(E),
+                      case Len of
+                        2 ->
+                          A + 1;
+                        4 ->
+                          A + 1;
+                        3 ->
+                          A + 1;
+                        7 ->
+                          A + 1;
+                        _ ->
+                          A
+                      end
+                   end,
+                   0,
+                   Out)
+        end,
+        0,
+        W).
 
 p2(Filename) ->
   solve(Filename).
@@ -23,4 +46,3 @@ p2(Filename) ->
 
 solve(Filename) ->
   ok.
-
