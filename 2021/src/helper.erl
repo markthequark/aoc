@@ -23,7 +23,7 @@ read_input(Filename, Delimiter, string) ->
 %% @doc Returns the integer represented by the ordered Digits
 %% An optional Base value may be provided representing the radix for the Digits
 undigits(Digits) ->
-  undigits(Digits, 2).
+  undigits(Digits, 10).
 
 undigits(Digits, Base) ->
   undigits(Digits, Base, 0).
