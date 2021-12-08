@@ -12,20 +12,13 @@
 %%====================================================================
 
 p1(Filename) ->
-  InputLines = helper:read_lines("priv/day8.txt", string),
-  W = map(fun(L) -> lists:split(10, string:lexemes(L, " |")) end, InputLines),
+  InputLines = helper:read_lines(Filename, string),
+  Lines = map(fun(L) -> lists:split(10, string:lexemes(L, " |")) end, InputLines),
   foldl(fun({_, Out}, Acc) ->
            Acc
            + foldl(fun(E, A) ->
-                      Len = length(E),
-                      case Len of
-                        2 ->
-                          A + 1;
-                        4 ->
-                          A + 1;
-                        3 ->
-                          A + 1;
-                        7 ->
+                      case length(E) of
+                        N when N == 2; N == 3; N == 4; N == 7 ->
                           A + 1;
                         _ ->
                           A
@@ -35,7 +28,7 @@ p1(Filename) ->
                    Out)
         end,
         0,
-        W).
+        Lines).
 
 p2(Filename) ->
   solve(Filename).
