@@ -10,21 +10,11 @@
 %%====================================================================
 
 p1(Filename) ->
-    ok.
+  ok.
 
 p2(Filename) ->
-    ok.
+  ok.
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
-
-parse_line(Line) ->
-    lists:map(fun(Digit) -> Digit - $0 end, Line).
-
-scan_for_low([Above | RestTop], [Before | [Elem, After | _] = RestMid], [Below | RestBot]) ->
-    ok.
-
-scan([_, Above | _] = Top, [Before, Elem, After | _] = Mid, [_, Below | _] = Bot, Acc)
-    when Elem < Above, Elem < Before, Elem < After, Elem < Below ->
-    scan(tl(Top), tl(Mid), tl(Bot), Acc + Elem + 1);
