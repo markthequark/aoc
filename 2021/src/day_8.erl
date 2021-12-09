@@ -42,13 +42,13 @@ decode(AllDigits) ->
     length5 := TwoThreeFive
   } = group_digits(AllDigits),
 
-  Three = determine_three(TwoThreeFive),
+  {value, Three} = lists:search(fun(Digit) -> One -- Digit == [] end, TwoThreeFive),
 
   [B] = ordsets:intersection(Four, Eight -- Three),
 
-  {value, Five} = lists:search(fun(X) -> lists:member(B, X) end, TwoThreeFive -- [Three]),
-  [Two] = TwoThreeFive -- [Five, Three],
+  {value, Five} = lists:search(fun(Digit) -> lists:member(B, Digit) end, TwoThreeFive -- [Three]),
 
+  [Two] = TwoThreeFive -- [Five, Three],
   [A] = Seven -- One,
   [C] = One -- Five,
   [F] = One -- [C],
@@ -92,12 +92,3 @@ digit_map() ->
     7 => undefined,
     8 => "abcdefg",
     length5 => []}.
-
-determine_three([Digit1, Digit2, Digit3]) ->
-  case {length(Digit1 -- Digit2),
-        length(Digit1 -- Digit3),
-        length(Digit2 -- Digit3)} of
-    {2, 1, 1} -> Digit3;
-    {1, 2, 1} -> Digit2;
-    {1, 1, 2} -> Digit1
-  end.
