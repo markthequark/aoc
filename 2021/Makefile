@@ -1,5 +1,5 @@
 all: format build
-	@_build/default/bin/advent_of_code 9
+	@_build/default/bin/advent_of_code 10
 
 format:
 	@rebar3 format
