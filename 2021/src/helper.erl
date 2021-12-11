@@ -3,7 +3,8 @@
 -import(lists, [map/2, foldl/3]).
 
 %% API
--export([read_input/3, read_lines/2, undigits/1, undigits/2, frequency_map/1]).
+-export([read_input/3, read_lines/2, undigits/1, undigits/2, frequency_map/1,
+         chunk_every/2]).
 
 %% @doc Returns a list of trimmed strings or binaries for each line in the file, ignoring empty lines
 -spec read_lines(string(), binary | string) -> [binary() | string()].
@@ -41,3 +42,14 @@ frequency_map(List) when is_list(List) ->
   foldl(fun(Elem, Acc) -> maps:update_with(Elem, fun(X) -> X + 1 end, 1, Acc) end,
         #{},
         List).
+
+chunk_every(List, N) ->
+  chunk_every(List, N, [[]]).
+
+chunk_every([], _N, Acc) ->
+  lists:reverse(Acc);
+%% use counter in function param instead of calculating length every iteration
+chunk_every(List, N, [Chunk | Acc]) when length(Chunk) == N ->
+  chunk_every(List, N, [[], lists:reverse(Chunk) | Acc]);
+chunk_every([Elem | Rest], N, [Chunk | Acc]) ->
+  chunk_every(Rest, N, [[Elem | Chunk] | Acc]).
