@@ -4,20 +4,19 @@
 
 %% API
 -export([p1/1, p2/1]).
+-compile(export_all).
 
 %%====================================================================
 %% API functions
 %%====================================================================
 
 p1(Filename) ->
-%%  Graph = to_graph(Filename),
-%%  get_num_paths(Graph, <<"start">>, <<"end">>, p1).
-  ok.
+  Graph = to_graph(Filename),
+  get_num_paths_p1(Graph, <<"start">>, <<"end">>).
 
 p2(Filename) ->
-%%  Graph = to_graph(Filename),
-  Graph = to_graph("priv/test"),
-  get_num_paths(Graph, <<"start">>, <<"end">>, p2).
+  Graph = to_graph(Filename),
+  get_num_paths_p2(Graph, <<"start">>, <<"end">>).
 
 %%====================================================================
 %% Internal functions
@@ -26,74 +25,81 @@ p2(Filename) ->
 to_graph(Filename) ->
   Input = helper:read_lines(Filename, binary),
   Edges = lists:map(fun(Line) -> string:split(Line, "-") end, Input),
-  Vertices = unique(lists:flatten(Edges)),
-  G = digraph:new(),
-  lists:foreach(fun(V) -> digraph:add_vertex(G, V) end, Vertices),
+  Vertices = ordsets:from_list(lists:flatten(Edges)),
+  Graph = digraph:new(),
+  lists:foreach(fun(V) -> digraph:add_vertex(Graph, V) end, Vertices),
   lists:foreach(fun([V1, V2]) ->
-                  digraph:add_edge(G, V1, V2),
-                  digraph:add_edge(G, V2, V1)
+                  digraph:add_edge(Graph, V1, V2),
+                  digraph:add_edge(Graph, V2, V1)
                 end,
                 Edges),
-  G.
+  Graph.
 
-get_num_paths(G, Start, End, Part) ->
-  Paths = [[Start]],
-  Acc = 0,
-  get_num_paths(G, End, Paths, Acc, Part).
+%%====================================================================
+%% Part 1 - BFS
+%%====================================================================
 
-get_num_paths(_G, _End, [], Acc, _Part) ->
+get_num_paths_p1(Graph, Start, End) ->
+  get_num_paths_p1(Graph, End, [[Start]], 0).
+
+get_num_paths_p1(_Graph, _End, [], Acc) ->
   Acc;
-get_num_paths(G, End, Paths, Acc, Part) ->
-  io:format("number of finished paths: ~p~n", [Acc]),
-  io:format("reamining paths: ~p~n",
-    [lists:map(fun(Path) -> lists:map(fun binary_to_list/1, Path) end, Paths)]),
-  AllPaths = flatten_n(1, [
+get_num_paths_p1(Graph, End, Paths, Acc) ->
+  AllPaths = helper:flatten_n(1,
     [
-      [NeighbourCave | Path]
+      [
+        case NeighbourCave of
+          End -> finished;
+          _ -> [NeighbourCave | Path]
+        end
+        ||
+        NeighbourCave <- digraph:out_neighbours(Graph, hd(Path)),
+        can_visit_p1(NeighbourCave, Path)
+      ]
       ||
-      NeighbourCave <- digraph:out_neighbours(G, hd(Path)),
-      can_visit(NeighbourCave, Path, Part)
-    ]
+      Path <- Paths
+    ]),
+
+  {FinishedPaths, NewPaths} = lists:partition(fun(Path) -> Path == finished end, AllPaths),
+  get_num_paths_p1(Graph, End, NewPaths, Acc + length(FinishedPaths)).
+
+can_visit_p1(Cave, Path) ->
+  not is_small(Cave)
+  orelse not lists:member(Cave, Path).
+
+%%====================================================================
+%% Part 2 - DFS
+%%====================================================================
+
+get_num_paths_p2(Graph, Start, End) ->
+  get_num_paths_p2(Graph, End, [[Start]], 0).
+
+get_num_paths_p2(Graph, _End, [], NumPaths) ->
+  NumPaths;
+get_num_paths_p2(Graph, End, [Path | Rest], NumPaths) ->
+  Paths = [
+    case NeighbourCave of
+      End -> finished;
+      _ -> [NeighbourCave | Path]
+    end
     ||
-    Path <- Paths
-  ]),
+    NeighbourCave <- digraph:out_neighbours(Graph, hd(Path)),
+    can_visit_p2(NeighbourCave, Path)
+  ],
 
-  {FinishedPaths, NewPaths} = lists:partition(fun(Path) -> hd(Path) == End end, AllPaths),
+  {FinishedPaths, NewPaths} = lists:partition(fun(Path) -> Path == finished end, Paths),
+  get_num_paths_p2(Graph, End, NewPaths ++ Rest, NumPaths + length(FinishedPaths)).
 
-  get_num_paths(G, End, NewPaths, Acc + length(FinishedPaths), Part).
-
--compile(export_all).
-can_visit(Cave, Path, Part) ->
-  case {Part, is_small(Cave)} of
-    {p1, true} ->
-      not lists:member(Cave, Path);
-    {p2, true} ->
-      not lists:member(Cave, Path)
-      orelse not (lists:member(Cave, [<<"start">>, <<"end">>])
-        orelse visited_small_cave_twice_already(Path));
-    {_, false} ->
-      true
-  end.
+can_visit_p2(Cave, Path) ->
+  not is_small(Cave)
+  orelse not lists:member(Cave, Path)
+  orelse not (Cave == <<"start">>
+    orelse Cave == <<"end">>
+    orelse visited_small_cave_twice_already(Path)).
 
 visited_small_cave_twice_already(Path) ->
   SmallCaves = lists:filter(fun is_small/1, Path),
-  length(SmallCaves) /= length(unique(SmallCaves)).
+  length(SmallCaves) /= sets:size(sets:from_list(SmallCaves)).
 
-is_small(Cave) when is_binary(Cave) ->
-  String = binary_to_list(Cave),
-  string:to_lower(String) == String.
-
-unique(List) ->
-  sets:to_list(sets:from_list(List)).
-
-%% @doc flatten a list by n levels
-%% Examples:
-%% > flatten_n(1, [["a", "b"], ["c", "d"]]).
-%% ["a", "b", "c", "d"]
-%% > flatten_n(2, [["a", "b"], ["c", "d"]]).
-%% "abcd"
-flatten_n(0, ListOfLists) ->
-  ListOfLists;
-flatten_n(N, ListOfLists) ->
-  NewList = lists:foldl(fun lists:merge/2, hd(ListOfLists), tl(ListOfLists)),
-  flatten_n(N - 1, NewList).
+is_small(<<X:8, _/binary>>) ->
+  X >= $a andalso X =< $z.
