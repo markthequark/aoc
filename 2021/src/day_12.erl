@@ -74,7 +74,7 @@ can_visit_p1(Cave, Path) ->
 get_num_paths_p2(Graph, Start, End) ->
   get_num_paths_p2(Graph, End, [[Start]], 0).
 
-get_num_paths_p2(Graph, _End, [], NumPaths) ->
+get_num_paths_p2(_Graph, _End, [], NumPaths) ->
   NumPaths;
 get_num_paths_p2(Graph, End, [Path | Rest], NumPaths) ->
   Paths = [
@@ -94,7 +94,6 @@ can_visit_p2(Cave, Path) ->
   not is_small(Cave)
   orelse not lists:member(Cave, Path)
   orelse not (Cave == <<"start">>
-    orelse Cave == <<"end">>
     orelse visited_small_cave_twice_already(Path)).
 
 visited_small_cave_twice_already(Path) ->
