@@ -4,7 +4,7 @@
 
 %% API
 -export([read_input/3, read_lines/2, undigits/1, undigits/2, frequency_map/1,
-         chunk_every/2]).
+         chunk_every/2, flatten_n/2]).
 
 %% @doc Returns a list of trimmed strings or binaries for each line in the file, ignoring empty lines
 -spec read_lines(string(), binary | string) -> [binary() | string()].
@@ -53,3 +53,15 @@ chunk_every(List, N, [Chunk | Acc]) when length(Chunk) == N ->
   chunk_every(List, N, [[], lists:reverse(Chunk) | Acc]);
 chunk_every([Elem | Rest], N, [Chunk | Acc]) ->
   chunk_every(Rest, N, [[Elem | Chunk] | Acc]).
+
+%% @doc flatten a list by n levels
+%% Examples:
+%% > flatten_n(1, [["a", "b"], ["c", "d"]]).
+%% ["c", "d", "b", "a"]
+%% > flatten_n(2, [["a", "b"], ["c", "d"]]).
+%% "bacd"
+flatten_n(0, ListOfLists) ->
+  ListOfLists;
+flatten_n(N, ListOfLists) ->
+  NewList = lists:foldl(fun erlang:'++'/2, hd(ListOfLists), tl(ListOfLists)),
+  flatten_n(N - 1, NewList).
