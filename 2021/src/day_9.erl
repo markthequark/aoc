@@ -1,6 +1,5 @@
 -module(day_9).
 -format(ignore).
--import(lists, [map/2, sum/1]).
 -export([p1/1, p2/1]).
 
 %%====================================================================
@@ -17,7 +16,9 @@ p1(Filename) ->
     map_get(Pos, Grid) < lists:min(lists:map(fun(Pos) -> map_get(Pos, Grid) end, neighbours(Pos, Grid)))
   ],
 
-  sum(lists:map(fun(Pos) -> map_get(Pos, Grid) + 1 end, LowPoints)).
+  lists:sum(
+    lists:map(fun(Pos) -> map_get(Pos, Grid) + 1 end,
+      LowPoints)).
 
 p2(Filename) ->
   Input = helper:read_lines(Filename, string),
@@ -29,15 +30,15 @@ p2(Filename) ->
     map_get(Pos, Grid) < lists:min(lists:map(fun(Pos) -> map_get(Pos, Grid) end, neighbours(Pos, Grid)))
   ],
 
-  Basins = lists:map(fun(LowPoint) -> get_basin(Grid, LowPoint) end, LowPoints),
-  
   lists:foldl(fun erlang:'*'/2,
     1,
     element(1,
       lists:split(3,
         lists:reverse(
           lists:sort(
-            lists:map(fun length/1, Basins)))))).
+            lists:map(fun sets:size/1,
+              lists:map(fun(LowPoint) -> get_basin(Grid, LowPoint) end,
+                LowPoints))))))).
 
 %%====================================================================
 %% Internal functions
@@ -46,10 +47,9 @@ p2(Filename) ->
 get_basin(Grid, LowPoint) ->
   get_basin(Grid, [LowPoint], sets:new([{version, 2}])).
 
-get_basin(Grid, [], Visited) ->
-  sets:to_list(Visited);
+get_basin(_Grid, [], Visited) ->
+  Visited;
 get_basin(Grid, [Pos | Rest], Visited) ->
-  io:format("Visited so far: ~p~n", [sets:size(Visited)]),
   NewPositions = [
     Neighbour
     ||
