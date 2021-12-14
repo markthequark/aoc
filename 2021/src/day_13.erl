@@ -13,8 +13,8 @@ p1(Filename) ->
 p2(Filename) ->
   Grid = solve(Filename),
   lists:foreach(fun(Row) ->
-                  lists:foreach(fun(0) -> io:format(".");
-                                   (1) -> io:format("#")
+                  lists:foreach(fun(0) -> io:format("  ");
+                                   (1) -> io:format("# ")
                                 end, Row),
                   io:format("~n")
                 end, Grid).
