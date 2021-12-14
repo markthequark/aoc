@@ -1,8 +1,6 @@
 -module(day_9).
-
+-format(ignore).
 -import(lists, [map/2, sum/1]).
-
-%% API
 -export([p1/1, p2/1]).
 
 %%====================================================================
@@ -11,67 +9,65 @@
 
 p1(Filename) ->
   Input = helper:read_lines(Filename, string),
-  Lines = map(fun parse_line/1, Input),
+  Grid = to_grid(Input),
+  LowPoints = [
+    Pos
+    ||
+    Pos <- maps:keys(Grid),
+    map_get(Pos, Grid) < lists:min(lists:map(fun(Pos) -> map_get(Pos, Grid) end, neighbours(Pos, Grid)))
+  ],
 
-  sum([scan(A, B, C) || [A, B, C] <- groups_of_3(Lines)]).
+  sum(lists:map(fun(Pos) -> map_get(Pos, Grid) + 1 end, LowPoints)).
 
 p2(Filename) ->
-  Input = helper:read_lines(Filename,string),
-  Grid = to_grid( Input ),
-  LowPoints =
-  [
-   Pos
-   ||
-   Pos <- maps:keys(Grid),
-   map_get(Pos,Grid) < lists:min(lists:map(fun(Pos) -> map_get(Pos,Grid) end, neighbours(Pos, Grid)))
+  Input = helper:read_lines(Filename, string),
+  Grid = to_grid(Input),
+  LowPoints = [
+    Pos
+    ||
+    Pos <- maps:keys(Grid),
+    map_get(Pos, Grid) < lists:min(lists:map(fun(Pos) -> map_get(Pos, Grid) end, neighbours(Pos, Grid)))
   ],
-  sum(lists:map(fun(Pos) -> map_get(Pos, Grid) end, LowPoints)).
+
+  Basins = lists:map(fun(LowPoint) -> get_basin(Grid, LowPoint) end, LowPoints),
+  
+  lists:foldl(fun erlang:'*'/2,
+    1,
+    element(1,
+      lists:split(3,
+        lists:reverse(
+          lists:sort(
+            lists:map(fun length/1, Basins)))))).
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
 
-parse_line(Line) ->
-  map(fun(Digit) -> Digit - $0 end, Line).
+get_basin(Grid, LowPoint) ->
+  get_basin(Grid, [LowPoint], sets:new([{version, 2}])).
 
-scan(none, Mid, Bot) ->
-  scan([10 || _ <- Mid], Mid, Bot);
-scan(Top, Mid, none) ->
-  scan(Top, Mid, [10 || _ <- Mid]);
-scan([Above | _] = Top, [Elem, After | _] = Mid, [Below | _] = Bot)
-  when Elem < Above, Elem < After, Elem < Below ->
-  scan(Top, Mid, Bot, Elem + 1);
-scan([_ | _] = Top, [_ | _] = Mid, [_ | _] = Bot) ->
-  scan(Top, Mid, Bot, 0).
+get_basin(Grid, [], Visited) ->
+  sets:to_list(Visited);
+get_basin(Grid, [Pos | Rest], Visited) ->
+  io:format("Visited so far: ~p~n", [sets:size(Visited)]),
+  NewPositions = [
+    Neighbour
+    ||
+    Neighbour <- neighbours(Pos, Grid),
+    map_get(Neighbour, Grid) /= 9,
+    not sets:is_element(Neighbour, Visited)
+  ],
 
-scan([_, Above], [Before, Elem], [_, Below], Acc)
-  when Elem < Above, Elem < Before, Elem < Below ->
-  Acc + Elem + 1;
-scan([_, _], [_, _], [_, _], Acc) ->
-  Acc;
-scan([_, Above | _] = Top, [Before, Elem, After | _] = Mid, [_, Below | _] = Bot, Acc)
-  when Elem < Above, Elem < Before, Elem < After, Elem < Below ->
-  scan(tl(Top), tl(Mid), tl(Bot), Acc + Elem + 1);
-scan(Top, Mid, Bot, Acc) ->
-  scan(tl(Top), tl(Mid), tl(Bot), Acc).
-
-groups_of_3([E1, E2 | _] = List) ->
-  groups_of_3(List, [[none, E1, E2]]).
-
-groups_of_3([E1, E2], Acc) ->
-  lists:reverse([[E1, E2, none] | Acc]);
-groups_of_3([E1 | [E2, E3 | _] = Rest], Acc) ->
-  groups_of_3(Rest, [[E1, E2, E3] | Acc]).
+  get_basin(Grid, NewPositions ++ Rest, sets:add_element(Pos, Visited)).
 
 neighbours({X, Y}, Grid) ->
   Offsets = [{1, 0}, {0, -1}, {0, 1}, {-1, 0}],
   [Pos || {XOff, YOff} <- Offsets, Pos <- [{X + XOff, Y + YOff}], is_map_key(Pos, Grid)].
 
 to_grid(ListOfLists) ->
-  maps:from_list([{{X, Y}, Val - $0}
-                  || {X, Row}
-                       <- lists:zip(
-                            lists:seq(1, length(ListOfLists)), ListOfLists),
-                     {Y, Val}
-                       <- lists:zip(
-                            lists:seq(1, length(Row)), Row)]).
+  maps:from_list([
+    {{X, Y}, Val - $0}
+    ||
+    {X, Row} <- lists:zip(lists:seq(1, length(ListOfLists)), ListOfLists),
+    {Y, Val} <- lists:zip(lists:seq(1, length(Row)), Row)
+  ]).
