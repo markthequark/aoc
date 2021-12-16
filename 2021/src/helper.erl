@@ -1,10 +1,10 @@
 -module(helper).
-
+-format(ignore).
 -import(lists, [map/2, foldl/3]).
 
 %% API
 -export([read_input/3, read_lines/2, undigits/1, undigits/2, frequency_map/1,
-         chunk_every/2, flatten_n/2, to_digits/1, to_digits/2, to_digits/3]).
+  chunk_every/2, flatten_n/2, to_digits/1, to_digits/2, to_digits/3, min_by/2, max_by/2]).
 
 %% @doc Returns a list of trimmed strings or binaries for each line in the file, ignoring empty lines
 -spec read_lines(string(), binary | string) -> [binary() | string()].
@@ -87,3 +87,9 @@ pad_list(N, List, _Value) when length(List) >= N ->
   List;
 pad_list(N, List, Value) ->
   pad_list(N, [Value | List], Value).
+
+min_by(Fn, [First | Rest]) ->
+  lists:foldl(fun(E, CurMin) -> case Fn(CurMin) < Fn(E) of true -> CurMin; false -> E end end, First, Rest).
+
+max_by(Fn, [First | Rest]) ->
+  lists:foldl(fun(E, CurMax) -> case Fn(CurMax) > Fn(E) of true -> CurMax; false -> E end end, First, Rest).
