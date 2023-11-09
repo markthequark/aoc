@@ -7,6 +7,11 @@ Build
 
     $ make build
 
+Test
+---
+
+    $ make test
+
 Run
 ---
 
