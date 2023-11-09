@@ -2,6 +2,7 @@ defmodule AdventOfCode.Util do
   @moduledoc """
   Utility functions shared between challenges
   """
+  @callback read!(Path.t()) :: binary()
 
   def read_input(day_number_or_filepath, type \\ :string, options \\ [trim: true])
 
@@ -11,7 +12,7 @@ defmodule AdventOfCode.Util do
   end
 
   def read_input(filepath, :string, options) do
-    File.read!(filepath)
+    read!(filepath)
     |> String.split("\n", options)
   end
 
@@ -19,4 +20,8 @@ defmodule AdventOfCode.Util do
     read_input(filepath, :string, options)
     |> Enum.map(&String.to_integer/1)
   end
+
+  ## Mockable functions
+  def read!(filepath), do: impl().read!(filepath)
+  defp impl, do: Application.get_env(:advent_of_code, :file_module, File)
 end

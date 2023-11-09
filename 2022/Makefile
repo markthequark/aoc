@@ -8,9 +8,14 @@ format:
 	@mix format
 
 build:
+	@mix deps.get
+	@mix deps.compile
 	@mix escript.build
+
+test:
+	@mix test
 
 %:
 	@:
 
-.PHONY: shell run format build
+.PHONY: shell run format build test
