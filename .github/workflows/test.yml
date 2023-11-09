@@ -1,17 +1,22 @@
-name: test
+name: test 2022
 
 on:
   push:
     branches:
       - master
+    paths:
+      - '2022/**'
 
 jobs:
   test:
+    name: Aoc 2022 Tests | OTP 26.1.2 | Elixir 1.16.0-rc.0
     runs-on: ubuntu-22.04
-    name: Tests | OTP 26.1.2 | Elixir 1.16.0-rc.0
-
+    defaults:
+      run:
+        working-directory: 2022
     env:
       MIX_ENV: test
+
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
@@ -31,5 +36,5 @@ jobs:
       - name: Compile
         run: mix compile --warnings-as-errors
 
-      - name: Run tests
+      - name: Test
         run: mix test
