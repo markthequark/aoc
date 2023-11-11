@@ -24,5 +24,5 @@ defmodule AdventOfCode.Day3Test do
     ttgJtRGJQctTZtZT
     CrZsJsPPZsGzwwsLwLmpwMDw
     """
-    end
+  end
 end
