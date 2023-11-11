@@ -21,6 +21,11 @@ defmodule AdventOfCode.Util do
     |> Enum.map(&String.to_integer/1)
   end
 
+  def read_input(filepath, :charlist, options) do
+    read_input(filepath, :string, options)
+    |> Enum.map(&String.to_charlist/1)
+  end
+
   ## Mockable functions
   def read!(filepath), do: impl().read!(filepath)
   defp impl, do: Application.get_env(:advent_of_code, :file_module, File)

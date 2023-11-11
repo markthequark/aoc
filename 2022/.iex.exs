@@ -1,3 +1,11 @@
 alias AdventOfCode.Util
 alias AdventOfCode.Day1
 alias AdventOfCode.Day2
+alias AdventOfCode.Day3
+alias AdventOfCode.Day4
+alias AdventOfCode.Day5
+alias AdventOfCode.Day6
+alias AdventOfCode.Day7
+alias AdventOfCode.Day8
+alias AdventOfCode.Day9
+alias AdventOfCode.Day10
