@@ -25,9 +25,8 @@ defmodule AdventOfCode.Day4 do
 
   def parse(pair) do
     for elf <- String.split(pair, ",") do
-      [section_start, section_end] =
-        String.split(elf, "-")
-        |> Enum.map(&String.to_integer/1)
+      String.split(elf, "-")
+      |> Enum.map(&String.to_integer/1)
     end
   end
 
