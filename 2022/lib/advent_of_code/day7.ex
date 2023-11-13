@@ -47,44 +47,33 @@ defmodule AdventOfCode.Day7 do
   end
 
   def build_file_sys(lines) do
-    state = %{cur_dir: nil, file_sys: %{} |> add_dir(["/"])}
-
-    state =
-      for line <- lines, reduce: state do
-        state ->
-          case line do
-            "$ cd " <> dir ->
-              process_cd(dir, state)
-
-            "$ ls" ->
-              state
-
-            _ ->
-              process_ls(line, state)
-          end
-      end
-
+    state0 = %{cur_dir: nil, file_sys: %{} |> add_dir(["/"])}
+    state = Enum.reduce(lines, state0, &process_line(&1, &2))
     state.file_sys
   end
 
-  def process_cd("/", state) do
+  def process_line("$ cd /", state) do
     %{state | cur_dir: ["/"]}
   end
 
-  def process_cd("..", state) do
+  def process_line("$ cd ..", state) do
     Map.update!(state, :cur_dir, &tl/1)
   end
 
-  def process_cd(dir, state) do
+  def process_line("$ cd " <> dir, state) do
     Map.update!(state, :cur_dir, &[dir | &1])
   end
 
-  def process_ls("dir " <> dir_name, state) do
+  def process_line("$ ls", state) do
+    state
+  end
+
+  def process_line("dir " <> dir_name, state) do
     dir_path = Enum.reverse([dir_name | state.cur_dir])
     Map.update!(state, :file_sys, &add_dir(&1, dir_path))
   end
 
-  def process_ls(file, state) do
+  def process_line(file, state) do
     [file_size, file_name] = String.split(file, " ")
     file_size = String.to_integer(file_size)
     dir_path = Enum.reverse(state.cur_dir)
