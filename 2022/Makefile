@@ -13,7 +13,7 @@ build:
 	@mix escript.build
 
 test:
-	@mix test
+	@mix test --trace
 
 %:
 	@:
