@@ -6,12 +6,12 @@ defmodule AdventOfCode.Day9 do
   alias AdventOfCode.Util
 
   def p1() do
-    state = %{head: {0, 0}, tail: {0, 0}, tail_visited: MapSet.new([])}
+    state = %{head: {0, 0}, tail: {0, 0}, tail_visited: MapSet.new()}
     solve(state)
   end
 
   def p2() do
-    state = %{knots: List.duplicate({12, 6}, 10), tail_visited: MapSet.new([])}
+    state = %{knots: List.duplicate({0, 0}, 10), tail_visited: MapSet.new()}
     solve(state)
   end
 
