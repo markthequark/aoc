@@ -23,6 +23,14 @@ defmodule AdventOfCode.Util do
     |> Enum.map(&String.to_charlist/1)
   end
 
+  # lines of numbers "1234" are parsed as a list of digits [1, 2, 3, 4]
+  def read_input(day_number, :digits, options) do
+    for line <- read_input(day_number, :string, options) do
+      String.codepoints(line)
+      |> Enum.map(&String.to_integer/1)
+    end
+  end
+
   ## Mockable functions
   def read!(filepath), do: impl().read!(filepath)
   defp impl(), do: Application.get_env(:advent_of_code, :file_module, File)
