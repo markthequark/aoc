@@ -86,9 +86,9 @@ defmodule AdventOfCode.Day11 do
     end
   end
 
-  def do_parse_monkey("Monkey " <> id, monkey) do
-    {id, _} = Integer.parse(id)
-    %Monkey{monkey | id: id}
+  def do_parse_monkey("Monkey " <> monkey_id, monkey) do
+    {monkey_id, _} = Integer.parse(monkey_id)
+    %Monkey{monkey | id: monkey_id}
   end
 
   def do_parse_monkey("Starting items: " <> items, monkey) do
