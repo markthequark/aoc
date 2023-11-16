@@ -1,3 +1,5 @@
+IEx.configure(inspect: [charlists: :as_lists])
+
 alias AdventOfCode.Util
 alias AdventOfCode.Day1
 alias AdventOfCode.Day2
@@ -9,3 +11,4 @@ alias AdventOfCode.Day7
 alias AdventOfCode.Day8
 alias AdventOfCode.Day9
 alias AdventOfCode.Day10
+alias AdventOfCode.Day11
