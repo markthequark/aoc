@@ -20,6 +20,7 @@ defmodule AdventOfCode.MixProject do
 
   defp deps do
     [
+      {:libgraph, "~> 0.16.0"},
       {:mox, "~> 1.1", only: :test}
     ]
   end
