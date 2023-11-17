@@ -18,3 +18,7 @@ Run
 ---
 
     $ make run <day number>
+
+Generate files for new day
+---
+    $ make new_day

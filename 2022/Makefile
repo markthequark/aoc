@@ -15,7 +15,10 @@ build:
 test:
 	@mix test --trace
 
+new_day:
+	@mix new_day
+
 %:
 	@:
 
-.PHONY: shell run format build test
+.PHONY: shell run format build test new_day
