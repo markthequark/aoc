@@ -4,6 +4,8 @@ defmodule Mix.Tasks.NewDay do
   """
   use Mix.Task
 
+  @requirements ["app.config", "app.start"]
+
   def run(_args) do
     day = next_day_number()
 
@@ -26,14 +28,19 @@ defmodule Mix.Tasks.NewDay do
   end
 
   def create_priv_file(day) do
-    File.write!("priv/day#{day}.txt", "\n")
+    contents =
+      aoc_web_request()
+      |> Req.get!(url: "/2022/day/#{day}/input")
+      |> then(& &1.body)
+
+    File.write!("priv/day#{day}.txt", contents)
   end
 
   def create_lib_module(day) do
     contents = """
     defmodule AdventOfCode.Day#{day} do
       @moduledoc \"""
-      Solution to day #{day}: title here
+      Solution to #{day_title(day)}
       https://adventofcode.com/2022/day/#{day}
       \"""
       alias AdventOfCode.Util
@@ -89,5 +96,21 @@ defmodule Mix.Tasks.NewDay do
     contents = "alias AdventOfCode.Day#{day}\n"
 
     File.write!(".iex.exs", contents, [:append])
+  end
+
+  def day_title(day) do
+    aoc_web_request()
+    |> Req.get!(url: "/2022/day/#{day}")
+    |> then(& &1.body["h2"])
+    |> to_string()
+    |> String.trim_leading("--- ")
+    |> String.trim_trailing(" ---")
+  end
+
+  def aoc_web_request() do
+    cookie = Application.get_env(:advent_of_code, :aoc_session_cookie)
+
+    Req.new(base_url: "https://adventofcode.com/", headers: %{cookie: cookie})
+    |> ReqEasyHTML.attach()
   end
 end
