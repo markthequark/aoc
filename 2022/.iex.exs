@@ -14,3 +14,4 @@ alias AdventOfCode.Day10
 alias AdventOfCode.Day11
 alias AdventOfCode.Day12
 alias AdventOfCode.Day13
+alias AdventOfCode.Day14
