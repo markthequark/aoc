@@ -122,7 +122,7 @@ defmodule Mix.Tasks.NewDay do
   # get the html element immediately after the first one to contain the string "For example"
   def find_test_input_elem(day_desc_elems) do
     {:halt, test_input_elem} =
-      for {elem_type, properties, contents} <- day_desc_elems, reduce: [] do
+      for {_elem_type, _properties, contents} <- day_desc_elems, reduce: [] do
         {:halt, _} = result ->
           result
 
