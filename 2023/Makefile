@@ -10,7 +10,7 @@ format:
 build:
 	@mix deps.get
 	@mix deps.compile
-	@mix escript.build
+	@MIX_ENV=prod mix escript.build
 
 test:
 	@mix test --trace

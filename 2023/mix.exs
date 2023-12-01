@@ -23,7 +23,8 @@ defmodule AdventOfCode.MixProject do
       {:libgraph, "~> 0.16.0"},
       {:req, "~> 0.4.0"},
       {:req_easyhtml, "~> 0.1.0"},
-      {:dotenvy, "~> 0.8.0"}
+      {:dotenvy, "~> 0.8.0"},
+      {:mox, "~> 1.1", only: :test}
     ]
   end
 end

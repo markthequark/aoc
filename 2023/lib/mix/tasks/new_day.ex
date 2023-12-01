@@ -74,8 +74,6 @@ defmodule Mix.Tasks.NewDay do
       alias AdventOfCode.Day#{day}
       use ExUnit.Case
 
-      setup :verify_on_exit!
-
       test "part1" do
         assert _ = Day#{day}.p1()
       end
