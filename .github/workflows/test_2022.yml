@@ -14,9 +14,11 @@ jobs:
     defaults:
       run:
         working-directory: 2022
+    environment:
+      name: test
     env:
-      AOC_SESSION_COOKIE: ${{ secrets.AOC_SESSION_COOKIE }}
       MIX_ENV: test
+      AOC_SESSION_COOKIE: ${{ secrets.AOC_SESSION_COOKIE }}
 
     steps:
       - uses: actions/checkout@v3
