@@ -34,3 +34,4 @@ The `.env.example` file serves as a template that lists all the environment vari
 Before starting development, duplicate the `.env.example` file and rename it to `.env`. Replace the placeholder values with your actual configuration settings.
 
     $ cp .env.example .env
+
