@@ -1,4 +1,4 @@
-name: test 2022
+name: test 2023
 
 on:
   push:
@@ -13,8 +13,9 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: 2022
+        working-directory: 2023
     env:
+      AOC_SESSION_COOKIE: ${{ secrets.AOC_SESSION_COOKIE }}
       MIX_ENV: test
 
     steps:
