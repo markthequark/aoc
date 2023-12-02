@@ -69,11 +69,7 @@ defmodule AdventOfCode.Day15 do
 
   def parse_line(line) do
     [x, y, x2, y2] =
-      String.split(
-        line,
-        ["Sensor at x=", ", y=", ": closest beacon is at x=", ", y="],
-        trim: true
-      )
+      String.split(line, ["Sensor at x=", ", y=", ": closest beacon is at x="], trim: true)
       |> Enum.map(&String.to_integer/1)
 
     %{sensor: %{x: x, y: y}, beacon: %{x: x2, y: y2}}
