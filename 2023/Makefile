@@ -18,7 +18,12 @@ test:
 new_day:
 	@mix new_day
 
+ci:
+	@mix format --check-formatted
+	@mix compile --warnings-as-errors
+	@mix test --trace --warnings-as-errors
+
 %:
 	@:
 
-.PHONY: shell run format build test new_day
+.PHONY: shell run format build test new_day ci
