@@ -130,8 +130,14 @@ defmodule Mix.Tasks.NewDay do
           default = contents
 
           Enum.find_value(prev_contents, default, fn
-            text when is_binary(text) -> if text =~ "For example", do: {:halt, contents}
-            _ -> nil
+            text when is_binary(text) ->
+              if text =~ "For example" or
+                   text =~ "Here is an example " do
+                {:halt, contents}
+              end
+
+            _ ->
+              nil
           end)
       end
 
