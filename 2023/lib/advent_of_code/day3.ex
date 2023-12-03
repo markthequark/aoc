@@ -42,7 +42,7 @@ defmodule AdventOfCode.Day3 do
 
         adjacent_part_numbers =
           part_numbers
-          |> Enum.filter(fn {part_num_positions, number} ->
+          |> Enum.filter(fn {part_num_positions, _number} ->
             contains_any?(gear_adjacent_positions, part_num_positions)
           end)
 
