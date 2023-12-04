@@ -75,11 +75,11 @@ defmodule Mix.Tasks.NewDay do
       use ExUnit.Case
 
       test "part1" do
-        assert _ = Day#{day}.p1()
+        assert :not_impl = Day#{day}.p1()
       end
 
       test "part2" do
-        assert _ = Day#{day}.p2()
+        assert :not_impl = Day#{day}.p2()
       end
     end
     """
