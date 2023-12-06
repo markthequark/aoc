@@ -14,7 +14,7 @@ defmodule AdventOfCode.Day5 do
   end
 
   def p2() do
-    lines = Util.read_input(5)
+    _lines = Util.read_input(5)
     # spent many hours on this, disaster, moving on
     :not_impl
   end
