@@ -1,0 +1,43 @@
+name: test 2024
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '2024/**'
+
+jobs:
+  test:
+    name: Aoc 2024 Tests | OTP 27.1.2 | Elixir 1.17.3
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: 2024
+    environment:
+      name: test
+    env:
+      MIX_ENV: test
+      AOC_SESSION_COOKIE: ${{ secrets.AOC_SESSION_COOKIE }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: 27.1.2
+          elixir-version: 1.17.3
+
+      - name: Format
+        run: mix format --check-formatted
+
+      - name: Dependencies
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+
+      - name: Compile
+        run: mix compile --warnings-as-errors
+
+      - name: Test
+        run: mix test --trace --warnings-as-errors
