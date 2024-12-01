@@ -2,7 +2,7 @@
 
 Elixir solutions to the [Advent of Code 2024](https://adventofcode.com/2024/)
 
-[![test 2024](https://github.com/markthequark/aoc/actions/workflows/test_2023.yml/badge.svg)](https://github.com/markthequark/aoc/actions/workflows/test_2024.yml)
+[![test 2024](https://github.com/markthequark/aoc/actions/workflows/test_2024.yml/badge.svg)](https://github.com/markthequark/aoc/actions/workflows/test_2024.yml)
 
 Build
 ---
