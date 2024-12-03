@@ -72,7 +72,7 @@ defmodule Mix.Tasks.NewDay do
     contents = """
     defmodule AdventOfCode.Day#{day}Test do
       alias AdventOfCode.Day#{day}
-      use ExUnit.Case
+      use MyCase
 
       test "part1" do
         assert :not_impl = Day#{day}.p1()

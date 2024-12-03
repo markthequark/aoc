@@ -1,6 +1,6 @@
 defmodule AdventOfCode.Day1Test do
   alias AdventOfCode.Day1
-  use ExUnit.Case
+  use MyCase
 
   test "part1" do
     assert 11 = Day1.p1()
