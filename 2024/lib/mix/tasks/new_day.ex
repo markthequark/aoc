@@ -9,8 +9,8 @@ defmodule Mix.Tasks.NewDay do
   def run(_args) do
     day = next_day_number()
 
-    create_non_test_input_file(day)
     create_test_input_file(day)
+    create_non_test_input_file(day)
     create_lib_module(day)
     create_test_module(day)
     update_iex_exs(day)
@@ -110,37 +110,28 @@ defmodule Mix.Tasks.NewDay do
   end
 
   def test_input(day_number) do
-    day_desc_elems =
-      aoc_web_request()
-      |> Req.get!(url: "/2024/day/#{day_number}")
-      |> then(&(&1.body["html body main article.day-desc"].nodes |> hd() |> elem(2)))
-
-    [{"code", _, [input]}] = find_test_input_elem(day_desc_elems)
-    input
+    aoc_web_request()
+    |> Req.get!(url: "/2024/day/#{day_number}")
+    |> then(&(&1.body["html body main article.day-desc"].nodes |> hd() |> elem(2)))
+    |> parse_html_element_contents()
+    |> List.flatten()
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.find_value(fn [text, test_input] ->
+      if text =~ "For example" or text =~ "Here is an example " do
+        test_input
+      end
+    end)
   end
 
-  # get the html element immediately after the first one to contain the string "For example"
-  def find_test_input_elem(day_desc_elems) do
-    {:halt, test_input_elem} =
-      for {_elem_type, _properties, contents} <- day_desc_elems, reduce: [] do
-        {:halt, _} = result ->
-          result
+  def parse_html_element_contents(elements) do
+    for element <- elements do
+      case element do
+        {_element_type, _properties, content} ->
+          parse_html_element_contents(content)
 
-        prev_contents ->
-          default = contents
-
-          Enum.find_value(prev_contents, default, fn
-            text when is_binary(text) ->
-              if text =~ "For example" or
-                   text =~ "Here is an example " do
-                {:halt, contents}
-              end
-
-            _ ->
-              nil
-          end)
+        content ->
+          content
       end
-
-    test_input_elem
+    end
   end
 end
