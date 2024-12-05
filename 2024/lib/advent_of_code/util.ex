@@ -31,6 +31,15 @@ defmodule AdventOfCode.Util do
     end
   end
 
+  # list of lists to grid as a map
+  def to_grid(list_of_lists) do
+    for {list, y} <- Enum.with_index(list_of_lists),
+        {elem, x} <- Enum.with_index(list),
+        into: %{} do
+      {{x, y}, elem}
+    end
+  end
+
   def input_filepath(day_number) do
     case Application.get_env(:advent_of_code, :input_file) do
       :test -> "test/input/day#{day_number}.txt"
