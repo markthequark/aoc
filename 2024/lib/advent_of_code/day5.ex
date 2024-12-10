@@ -61,7 +61,7 @@ defmodule AdventOfCode.Day5 do
               acc_index = Enum.find_index(acc, &(&1 == page))
               %{page: page, acc_index: acc_index}
             end
-            |> Enum.filter(fn %{page: page, acc_index: acc_index} -> acc_index < left_index end)
+            |> Enum.filter(fn %{page: _page, acc_index: acc_index} -> acc_index < left_index end)
             |> Enum.sort_by(& &1.acc_index)
             |> Enum.map(& &1.page)
 
