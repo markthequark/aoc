@@ -6,10 +6,14 @@ defmodule AdventOfCode.Util do
 
   def read_input(day_number, type \\ :string, options \\ [trim: true])
 
-  def read_input(day_number, :string, options) do
+  def read_input(day_number, :raw, _options) do
     day_number
     |> input_filepath()
     |> read!()
+  end
+
+  def read_input(day_number, :string, options) do
+    read_input(day_number, :raw, options)
     |> String.split("\n", options)
   end
 
